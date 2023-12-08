@@ -11,7 +11,7 @@
 # Converted to a PowerShell Script by Thomas Parkison.
 
 # Set locations to save export files
-$saveFolder = "C:\bw_export" # No leading slash
+$saveFolder = "C:/bw_export" # No leading slash
 
 # Set Organization ID (if applicable)
 $orgId = ""
@@ -23,7 +23,7 @@ $orgId = ""
 # ====================================================
 
 Write-Host -ForegroundColor Green "========================================================================================"
-Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.08                         =="
+Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.09                         =="
 Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 Write-Host -ForegroundColor Green "========================================================================================"
 Write-Host ""
@@ -33,7 +33,7 @@ $userEmail = Read-Host "Enter your Bitwarden Username"
 
 $saveFolder = [System.IO.Path]::Combine($saveFolder, $userEmail)
 $saveFolderAttachments = [System.IO.Path]::Combine($saveFolder, "attachments")
-$saveFolder = $saveFolder + "\"
+$saveFolder = $saveFolder + "/"
 
 if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
@@ -65,10 +65,10 @@ function AskYesNoQuestion {
 }
 
 function LockAndLogout {
-      	.\bw.exe lock
+      	./bw lock
       	Write-Host ""
 
-      	.\bw.exe logout
+      	./bw logout
       	Write-Host ""
 }
 
@@ -76,13 +76,13 @@ function LockAndLogout {
 $bwPassword = Read-Host "Enter your Bitwarden Password" -AsSecureString
 
 # Login user if not already authenticated
-if ((.\bw.exe status | ConvertFrom-Json).status -eq "unauthenticated") {
+if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 	Write-Host "Performing login..."
 	$bwPasswordText = ConvertSecureString -String $bwPassword
-	.\bw.exe login $userEmail $bwPasswordText --method 0 --quiet
+	./bw login $userEmail $bwPasswordText --method 0 --quiet
 }
 
-if ((.\bw.exe status | ConvertFrom-Json).status -eq "unauthenticated") {
+if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 	Write-Host -ForegroundColor Red "Error:" -NoNewLine
 	Write-Host " Failed to authenticate."
 	exit 1
@@ -90,7 +90,7 @@ if ((.\bw.exe status | ConvertFrom-Json).status -eq "unauthenticated") {
 
 # Unlock the vault
 $bwPasswordText = ConvertSecureString -String $bwPassword
-$sessionKey = (.\bw.exe unlock "$bwPasswordText" --raw) | Out-String
+$sessionKey = (./bw unlock "$bwPasswordText" --raw) | Out-String
 
 # Verify that unlock succeeded
 if ([String]::IsNullOrWhiteSpace($sessionKey)) {
@@ -152,12 +152,12 @@ if (!(Test-Path $saveFolder)) {
 
 if (!$encryptedDataBackup) {
 	Write-Host "Exporting personal vault to an unencrypted file..."
-	.\bw.exe export --format json --output $saveFolder
+	./bw export --format json --output $saveFolder
 	Write-Host ""
 }
 else {
 	Write-Host "Exporting personal vault to a password-encrypted file..."
-	.\bw.exe export --format encrypted_json --password $password1Text --output $saveFolder
+	./bw export --format encrypted_json --password $password1Text --output $saveFolder
 	Write-Host ""
 }
 
@@ -165,12 +165,12 @@ else {
 if (!([string]::IsNullOrEmpty($orgId))) {
 	if (!$encryptedDataBackup) {
 		Write-Host "Exporting organization vault to an unencrypted file..."
-		.\bw.exe export --organizationid $orgId --format json --output $saveFolder
+		./bw export --organizationid $orgId --format json --output $saveFolder
 		Write-Host ""
 	}
 	else {
 		Write-Host "Exporting organization vault to a password-encrypted file..."
-		.\bw.exe export --organizationid $orgId --format encrypted_json --password $password1Text --output $saveFolder
+		./bw export --organizationid $orgId --format encrypted_json --password $password1Text --output $saveFolder
 		Write-Host ""
 	}
 }
@@ -178,7 +178,7 @@ else { Write-Host "No organizational vault exists, so nothing to export." }
 
 # 3. Download all attachments (file backup)
 # First download attachments in vault
-$itemsWithAttachments = (.\bw.exe list items | ConvertFrom-Json | Where-Object { $_.attachments -ne $null })
+$itemsWithAttachments = (./bw list items | ConvertFrom-Json | Where-Object { $_.attachments -ne $null })
 
 if ($itemsWithAttachments.Count -gt 0) {
 	Write-Host "Saving attachments..."
@@ -186,8 +186,8 @@ if ($itemsWithAttachments.Count -gt 0) {
 	foreach ($item in $itemsWithAttachments) {
 		foreach ($attachment in $item.attachments) {
 			$filePath = [IO.Path]::Combine($saveFolderAttachments, $item.name)
-			.\bw.exe get attachment "$($attachment.fileName)" --itemid $item.id --output "$filePath\"
-			Write-Host ""
+			./bw get attachment "$($attachment.fileName)" --itemid $item.id --output "$filePath/"
+			if ($IsWindows) { Write-Host "" }
 		}
 	}
 }
@@ -196,7 +196,7 @@ else { Write-Host "No attachments exist, so nothing to export." }
 Write-Host -ForegroundColor Green "Vault export complete."
 
 # 4. Report items in the Trash (cannot be exported)
-$trashCount = (.\bw.exe list items --trash | ConvertFrom-Json).Count
+$trashCount = (./bw list items --trash | ConvertFrom-Json).Count
 
 if ($trashCount -gt 0) {
 	Write-Host -ForegroundColor Yellow "Note:" -NoNewLine
