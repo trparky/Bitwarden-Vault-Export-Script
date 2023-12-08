@@ -20,3 +20,6 @@ A GUID looks like this... 14fc2739-eb67-4e20-b39a-1c492e4fdaac
 Copy that and put it into the $orgId variable and then execute ./bw_export.ps1 and follow the prompts.
 
 That's all there is to it.
+
+# Open Source!!!
+Yes, this is open source and licensed under the MIT license. What does this mean? It means that you, the user, can fork this project, make your additions, and create a pull request for me to include your additions and improvements back to the original script. Isn't open source cool? I think so!
