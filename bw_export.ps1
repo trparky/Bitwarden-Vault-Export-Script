@@ -23,7 +23,7 @@ $orgId = ""
 # ====================================================
 
 Write-Host -ForegroundColor Green "========================================================================================"
-Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.07                         =="
+Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.08                         =="
 Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 Write-Host -ForegroundColor Green "========================================================================================"
 Write-Host ""
@@ -185,7 +185,8 @@ if ($itemsWithAttachments.Count -gt 0) {
 
 	foreach ($item in $itemsWithAttachments) {
 		foreach ($attachment in $item.attachments) {
-			.\bw.exe get attachment "$($attachment.fileName)" --itemid $item.id --output "$saveFolderAttachments\$($item.name)\"
+			$filePath = [IO.Path]::Combine($saveFolderAttachments, $item.name)
+			.\bw.exe get attachment "$($attachment.fileName)" --itemid $item.id --output "$filePath\"
 			Write-Host ""
 		}
 	}
