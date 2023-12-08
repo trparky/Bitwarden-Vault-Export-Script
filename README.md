@@ -1,4 +1,4 @@
-# Bitwarden-Vault-Export-Script
+# Bitwarden Vault Export Script
 As stated in the script file, the script is based upon another (Bash) script created by "David H". I took his script, added much more functionality, and eventually converted it over to a Powershell script.
 
 # Environment Setup
