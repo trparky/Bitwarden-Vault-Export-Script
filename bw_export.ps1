@@ -10,9 +10,6 @@
 #
 # Converted to a PowerShell Script by Thomas Parkison.
 
-# Set locations to save export files
-$saveFolder = "C:/bw_export" # No leading slash
-
 # Set Organization ID (if applicable)
 $orgId = ""
 # To obtain your organization_id value, open a terminal and type:
@@ -23,7 +20,7 @@ $orgId = ""
 # ====================================================
 
 Write-Host -ForegroundColor Green "========================================================================================"
-Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.09                         =="
+Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.10                         =="
 Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 Write-Host -ForegroundColor Green "========================================================================================"
 Write-Host ""
@@ -31,9 +28,12 @@ Write-Host ""
 # Prompt user for their Bitwarden username
 $userEmail = Read-Host "Enter your Bitwarden Username"
 
-$saveFolder = [System.IO.Path]::Combine($saveFolder, $userEmail)
+$saveFolder = [System.IO.Path]::Combine((get-location), $userEmail)
+
+if ($IsWindows) { $saveFolder = $saveFolder + "\" }
+else { $saveFolder = $saveFolder + "/" }
+
 $saveFolderAttachments = [System.IO.Path]::Combine($saveFolder, "attachments")
-$saveFolder = $saveFolder + "/"
 
 if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
@@ -186,7 +186,11 @@ if ($itemsWithAttachments.Count -gt 0) {
 	foreach ($item in $itemsWithAttachments) {
 		foreach ($attachment in $item.attachments) {
 			$filePath = [IO.Path]::Combine($saveFolderAttachments, $item.name)
-			./bw get attachment "$($attachment.fileName)" --itemid $item.id --output "$filePath/"
+
+			if ($IsWindows) { $filePath = $filePath + "\" }
+			else { $filePath = $filePath + "/" }
+
+			./bw get attachment "$($attachment.fileName)" --itemid $item.id --output $filePath
 			if ($IsWindows) { Write-Host "" }
 		}
 	}
