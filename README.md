@@ -2,11 +2,11 @@
 As stated in the script file, the script is based upon another (Bash) script created by "David H". I took his script, added much more functionality, and eventually converted it over to a Powershell script.
 
 # Environment Setup
-In order for this Powershell script to work and you know, export your Bitwarden Vault, you'll need the Bitwarden CLI executable. You can do so by going to https://bitwarden.com/download/ and scrolling down to the section that reads "Command Line Interface". In the case of this script, since it was built to run on Windows, you'll want to choose the Windows version.
+In order for this Powershell script to work and you know, export your Bitwarden Vault, you'll need the Bitwarden CLI executable. You can get it by going to https://bitwarden.com/download/ and scrolling down to the section that reads "Command Line Interface". In the case of this script, since it was built to run on Windows, you'll want to choose the Windows version.
 
 Once you have the BW.EXE file, simply drop it into the same folder as you have this script and modify the $saveFolder to point it to the folder in which the script and BW.EXE exists.
 
-**Note:** There's a possibility that this script *may* work on any operating system that Powershell can be installed on. However, your mileage may vary. I, myself, haven't done any testing on other operating systems.
+**Note:** There's a possibility that this script *may* work on any operating system that Powershell can be installed on. So far, I've only tested on Ubuntu in WSL.
 
 # Organization Configuration
 $orgId, this is the variable that you need to set in order to export your organization data. In order to get your organization GUID, do the following...
