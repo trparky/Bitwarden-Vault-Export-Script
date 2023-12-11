@@ -20,7 +20,7 @@ $orgId = ""
 # ====================================================
 
 Write-Host -ForegroundColor Green "========================================================================================"
-Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.10                         =="
+Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.11                         =="
 Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 Write-Host -ForegroundColor Green "========================================================================================"
 Write-Host ""
@@ -79,7 +79,7 @@ $bwPassword = Read-Host "Enter your Bitwarden Password" -AsSecureString
 if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 	Write-Host "Performing login..."
 	$bwPasswordText = ConvertSecureString -String $bwPassword
-	./bw login $userEmail $bwPasswordText --method 0 --quiet
+	./bw login $userEmail $bwPasswordText --quiet
 }
 
 if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
