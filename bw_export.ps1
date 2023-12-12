@@ -21,7 +21,7 @@ try {
 	# ====================================================
 	
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.12                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.13                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
@@ -75,6 +75,8 @@ try {
 	
 	# Prompt user for their Bitwarden password
 	$bwPassword = Read-Host "Enter your Bitwarden Password" -AsSecureString
+
+	Write-Host ""
 	
 	# Login user if not already authenticated
 	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
@@ -104,26 +106,17 @@ try {
 	# Export the session key as an env variable (needed by bw.exe CLI)
 	$env:BW_SESSION = $sessionKey
 	
-	# Prompt the user for an encryption password
-	$password1 = Read-Host "Enter a password to encrypt your vault (or press ENTER for an unencrypted export)" -AsSecureString
-	
-	# Convert the SecureString to plain text
-	$password1Text = ConvertSecureString -String $password1
-	
 	$encryptedDataBackup = $false
-	
-	# Check if the user has decided to enter a password or save unencrypted
-	if ([String]::IsNullOrWhiteSpace($password1Text)) {
-		Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
-		Write-Host " Your vault contents will be saved to an unencrypted file."
-	
-		if ((AskYesNoQuestion -prompt "Continue? [y/n]") -eq "n") {
-			LockAndLogout
-			Write-Host "Exiting script."
-			exit 1
-		}
-	}
-	else {
+
+	Write-Host ""
+
+	if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
+		$encryptedDataBackup = $true
+
+		# Prompt the user for an encryption password
+		$password1 = Read-Host "Enter a password to encrypt your vault" -AsSecureString
+		$password1Text = ConvertSecureString -String $password1
+
 		$password2 = Read-Host "Enter the same password for verification" -AsSecureString
 		$password2Text = ConvertSecureString -String $password2
 		
@@ -131,11 +124,23 @@ try {
 			Write-Host -ForegroundColor Red "Error:" -NoNewLine
 			Write-Host " The passwords did not match."
 			LockAndLogout
+			$env:BW_SESSION = ""
 			exit 1
 		}
 		else {
 			Write-Host "Password verified. Be sure to save your password in a safe place!"
 			$encryptedDataBackup = $true
+		}
+	}
+	else {
+		Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
+		Write-Host " Your vault contents will be saved to an unencrypted file."
+	
+		if ((AskYesNoQuestion -prompt "Continue? [y/n]") -eq "n") {
+			LockAndLogout
+			Write-Host "Exiting script."
+			$env:BW_SESSION = ""
+			exit 1
 		}
 	}
 	
@@ -213,6 +218,7 @@ try {
 	if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
 		Write-Host "Compressing backup..."
 		Set-Location $saveFolder
+		if (Test-Path "$userEmail.zip") { Remove-Item "$userEmail.zip" }
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
 		Move-Item "$userEmail.zip" ../
 		Set-Location ../
