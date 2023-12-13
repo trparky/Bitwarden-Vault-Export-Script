@@ -21,7 +21,7 @@ try {
 	# ====================================================
 
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.13                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.14                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
@@ -218,7 +218,7 @@ try {
 	if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
 		Write-Host "Compressing backup..."
 		Set-Location $saveFolder
-		if (Test-Path "$userEmail.zip") { Remove-Item "$userEmail.zip" }
+		if (Test-Path "../$userEmail.zip") { Remove-Item "../$userEmail.zip" }
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
 		Move-Item "$userEmail.zip" ../
 		Set-Location ../
