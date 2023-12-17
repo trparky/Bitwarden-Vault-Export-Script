@@ -29,12 +29,12 @@ try {
 	# Prompt user for their Bitwarden username
 	$userEmail = Read-Host "Enter your Bitwarden Username"
 
-	$saveFolder = [System.IO.Path]::Combine((get-location), $userEmail)
+	$saveFolder = Join-Path (Get-Location) $userEmail
 
 	if ($IsWindows) { $saveFolder = $saveFolder + "\" }
 	else { $saveFolder = $saveFolder + "/" }
 
-	$saveFolderAttachments = [System.IO.Path]::Combine($saveFolder, "attachments")
+	$saveFolderAttachments = Join-Path $saveFolder "attachments"
 
 	if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
@@ -191,7 +191,7 @@ try {
 
 		foreach ($item in $itemsWithAttachments) {
 			foreach ($attachment in $item.attachments) {
-				$filePath = [IO.Path]::Combine($saveFolderAttachments, $item.name)
+				$filePath = Join-Path $saveFolderAttachments $item.name
 
 				if ($IsWindows) { $filePath = $filePath + "\" }
 				else { $filePath = $filePath + "/" }
