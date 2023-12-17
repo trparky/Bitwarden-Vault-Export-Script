@@ -218,7 +218,10 @@ try {
 	if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
 		Write-Host "Compressing backup..."
 		Set-Location $saveFolder
-		if (Test-Path "../$userEmail.zip") { Remove-Item "../$userEmail.zip" }
+
+		$zipfiletestpath = Join-Path ".." "$userEmail.zip"
+		if (Test-Path $zipfiletestpath) { Remove-Item $zipfiletestpath }
+		
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
 		Move-Item "$userEmail.zip" ..
 		Set-Location ..
