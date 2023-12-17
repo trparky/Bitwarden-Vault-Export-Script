@@ -220,8 +220,8 @@ try {
 		Set-Location $saveFolder
 		if (Test-Path "../$userEmail.zip") { Remove-Item "../$userEmail.zip" }
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
-		Move-Item "$userEmail.zip" ../
-		Set-Location ../
+		Move-Item "$userEmail.zip" ..
+		Set-Location ..
 		Remove-Item $saveFolder -Recurse -Force
 	}
 
