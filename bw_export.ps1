@@ -11,17 +11,12 @@
 # Converted to a PowerShell Script by Thomas Parkison.
 
 try {
-	# Set Organization ID (if applicable)
-	$orgId = ""
-	# To obtain your organization_id value, open a terminal and type:
-	# bw.exe login #(follow the prompts); bw.exe list organizations | ConvertFrom-Json | Select-Object -ExpandProperty Id
-
 	# ====================================================
 	# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 	# ====================================================
 
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.16                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.17                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
@@ -193,19 +188,25 @@ try {
 		Write-Host ""
 	}
 
-	# 2. Export the organization vault (if specified)
-	if (!([string]::IsNullOrEmpty($orgId))) {
-		if (!$encryptedDataBackup) {
-			Write-Host "Exporting organization vault to an unencrypted file..."
-			./bw export --organizationid $orgId --format json --output $saveFolder
-			Write-Host ""
-		}
-		else {
-			Write-Host "Exporting organization vault to a password-encrypted file..."
-			./bw export --organizationid $orgId --format encrypted_json --password $password1Text --output $saveFolder
-			Write-Host ""
-		}
-	}
+  	$organizations = (./bw list organizations | ConvertFrom-Json)
+
+  	if ($organizations.Count -gt 0) {
+  		foreach ($organization in $organizations) {
+  			$organizationID = $organization.id
+  			$organizationName = $organization.name
+
+  			if (!$encryptedDataBackup) {
+  				Write-Host "Exporting organization vault for organization ""$organizationName"" to an unencrypted file..."
+  				./bw export --organizationid $organizationID --format json --output $saveFolder
+  				Write-Host ""
+  			}
+  			else {
+  				Write-Host "Exporting organization vault for organization ""$organizationName"" to a password-encrypted file..."
+  				./bw export --organizationid $organizationID --format encrypted_json --password $password1Text --output $saveFolder
+  				Write-Host ""
+  			}
+  		}
+  	}
 	else { Write-Host "No organizational vault exists, so nothing to export." }
 
 	# 3. Download all attachments (file backup)
