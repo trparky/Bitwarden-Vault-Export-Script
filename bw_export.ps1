@@ -21,10 +21,36 @@ try {
 	# ====================================================
 
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.15                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.16                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
+
+	if ($IsWindows) { $bwCliBinName = (Join-Path (Get-Location) "bw.exe") }
+	else { $bwCliBinName = (Join-Path (Get-Location) "bw") }
+
+	if (!(Test-Path -Path $bwCliBinName)) {
+		Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
+		$zipFilePath = (Join-Path (Get-Location) "bw.zip")
+
+		if ($IsWindows) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=windows" -OutFile $zipFilePath }
+		elseif ($IsLinux) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=linux" -OutFile $zipFilePath }
+		elseif ($IsMacOS) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
+
+		Expand-Archive -Path $zipFilePath
+
+		if ($IsLinux || $IsMacOS) {
+			Move-Item (Join-Path (Get-Location) "bw" "bw") (Join-Path (Get-Location) "bw.tmp")
+			Remove-Item -Force (Join-Path (Get-Location) "bw")
+			Move-Item (Join-Path (Get-Location) "bw.tmp") (Join-Path (Get-Location) "bw")
+			chmod 755 (Join-Path (Get-Location) "bw")
+		}
+
+		Remove-Item $zipFilePath
+
+		Write-Host " Done."
+		Write-Host ""
+	}
 
 	# Prompt user for their Bitwarden username
 	$userEmail = Read-Host "Enter your Bitwarden Username"
