@@ -24,7 +24,7 @@ try {
 	# ====================================================
 
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.18                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.19                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
