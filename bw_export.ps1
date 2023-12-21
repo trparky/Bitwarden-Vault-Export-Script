@@ -10,22 +10,24 @@
 #
 # Converted to a PowerShell Script by Thomas Parkison.
 
+# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
+# It does this by taking the version of your currently existing Bitwarden CLI and comparing it to the version that's contained in a small text file that's on my GitHub
+# page. Now, if you don't want this to happen, you can disable this kind of functionality in the script by setting the value of the $checkForBWCliUpdate to $false.
+# However, it's highly recommended that you do keep this setting enabled since keeping your Bitwarden CLI up to date is obviously a good thing to do.
+$checkForBWCliUpdate = $true
+
 try {
 	# ====================================================
 	# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 	# ====================================================
 
 	Write-Host -ForegroundColor Green "========================================================================================"
-	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.17                         =="
+	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.18                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
 
-	if ($IsWindows) { $bwCliBinName = (Join-Path (Get-Location) "bw.exe") }
-	else { $bwCliBinName = (Join-Path (Get-Location) "bw") }
-
-	if (!(Test-Path -Path $bwCliBinName)) {
-		Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
+	function DownloadBWCli {
 		$zipFilePath = (Join-Path (Get-Location) "bw.zip")
 
 		if ($IsWindows) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=windows" -OutFile $zipFilePath }
@@ -45,6 +47,56 @@ try {
 
 		Write-Host " Done."
 		Write-Host ""
+	}
+
+	function ShouldWeCheckForABWCLIUpdate {
+		$currentDate = Get-Date
+		$checkForLastUpdateFile = Join-Path (Get-Location) "lastcheckforupdate.txt"
+
+		if (!(Test-Path -Path $checkForLastUpdateFile)) {
+			$currentDate | Out-File -FilePath $checkForLastUpdateFile
+			return $true
+		}
+		else {
+			$storedDate = Get-Content -Path $checkForLastUpdateFile
+
+			try {
+				$storedDateTime = [DateTime]::Parse($storedDate)
+				$daysDifference = (Get-Date) - $storedDateTime
+
+				if ($daysDifference.Days -gt 10) {
+					$currentDate | Out-File -FilePath $checkForLastUpdateFile
+					return $true
+				}
+				else { return $false }
+			}
+			catch {
+				$currentDate | Out-File -FilePath $checkForLastUpdateFile
+				return $true
+			}
+		}
+	}
+
+	if ($IsWindows) { $bwCliBinName = (Join-Path (Get-Location) "bw.exe") }
+	else { $bwCliBinName = (Join-Path (Get-Location) "bw") }
+
+	if (!(Test-Path -Path $bwCliBinName)) {
+		Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
+		DownloadBWCli
+	}
+	else {
+		if ($checkForBWCliUpdate) {
+			if (ShouldWeCheckForABWCLIUpdate) {
+				$localBWCliVersion = ((./bw --version) | Out-String).Trim()
+				$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
+	
+				if ($localBWCliVersion -ne $remoteBWCliVersion) {
+					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
+					Remove-Item $bwCliBinName
+					DownloadBWCli
+				}
+			}
+		}
 	}
 
 	# Prompt user for their Bitwarden username
