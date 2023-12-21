@@ -64,8 +64,6 @@ try {
 			[System.Security.SecureString]$String
 		)
 
-		#return [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($String)) // Old way
-
 		if ($String.Length -eq 0) { return "" }
 		else {
 			$output = ConvertFrom-SecureString -SecureString $String -AsPlainText
