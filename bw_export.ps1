@@ -1,3 +1,5 @@
+#!/usr/bin/pwsh
+
 # Bitwarden Vault Export Script
 # Author: David H (@dh024)
 #
