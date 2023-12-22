@@ -92,7 +92,7 @@ try {
 			if (ShouldWeCheckForABWCLIUpdate) {
 				$localBWCliVersion = ((./bw --version) | Out-String).Trim()
 				$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
-	
+
 				if ($localBWCliVersion -ne $remoteBWCliVersion) {
 					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
 					Remove-Item $bwCliBinName
