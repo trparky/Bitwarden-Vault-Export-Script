@@ -85,6 +85,7 @@ try {
 	if (!(Test-Path -Path $bwCliBinName)) {
 		Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
 		DownloadBWCli
+		Get-Date | Out-File -FilePath (Join-Path (Get-Location) "lastcheckforupdate.txt") -NoNewline
 	}
 	else {
 		if ($checkForBWCliUpdate) {
