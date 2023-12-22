@@ -56,7 +56,7 @@ try {
 		$checkForLastUpdateFile = Join-Path (Get-Location) "lastcheckforupdate.txt"
 
 		if (!(Test-Path -Path $checkForLastUpdateFile)) {
-			$currentDate | Out-File -FilePath $checkForLastUpdateFile
+			$currentDate | Out-File -FilePath $checkForLastUpdateFile -NoNewline
 			return $true
 		}
 		else {
@@ -67,7 +67,7 @@ try {
 				$daysDifference = (Get-Date) - $storedDateTime
 
 				if ($daysDifference.Days -gt 10) {
-					$currentDate | Out-File -FilePath $checkForLastUpdateFile
+					$currentDate | Out-File -FilePath $checkForLastUpdateFile -NoNewline
 					return $true
 				}
 				else { return $false }
