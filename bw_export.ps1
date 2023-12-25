@@ -199,6 +199,12 @@ try {
 			Write-Host " The passwords did not match."
 			LockAndLogout
 			$env:BW_SESSION = ""
+			$bwPassword = ""
+			$bwPasswordText = ""
+			$password1 = ""
+			$password1Text = ""
+			$password2 = ""
+			$password2Text = ""
 			exit 1
 		}
 		else {
@@ -214,6 +220,12 @@ try {
 			LockAndLogout
 			Write-Host "Exiting script."
 			$env:BW_SESSION = ""
+			$bwPassword = ""
+			$bwPasswordText = ""
+			$password1 = ""
+			$password1Text = ""
+			$password2 = ""
+			$password2Text = ""
 			exit 1
 		}
 	}
@@ -312,4 +324,10 @@ try {
 }
 finally {
 	$env:BW_SESSION = ""
+	$bwPassword = ""
+	$bwPasswordText = ""
+	$password1 = ""
+	$password1Text = ""
+	$password2 = ""
+	$password2Text = ""
 }
