@@ -202,8 +202,6 @@ try {
 	Write-Host ""
 
 	if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
-		$encryptedDataBackup = $true
-
 		# Prompt the user for an encryption password
 		$password1 = Read-Host "Enter a password to encrypt your vault" -AsSecureString
 		$password1Text = ConvertSecureString -String $password1
