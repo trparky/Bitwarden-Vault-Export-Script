@@ -51,6 +51,17 @@ try {
 		Write-Host ""
 	}
 
+	function ValidateEmailAddress {
+		param (
+			[string]$email
+		)
+
+		$emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+		$regex = New-Object System.Text.RegularExpressions.Regex $emailPattern
+
+		return $regex.IsMatch($email)
+	}
+
 	function ShouldWeCheckForABWCLIUpdate {
 		$currentDate = Get-Date
 		$checkForLastUpdateFile = Join-Path (Get-Location) "lastcheckforupdate.txt"
@@ -104,6 +115,12 @@ try {
 
 	# Prompt user for their Bitwarden username
 	$userEmail = Read-Host "Enter your Bitwarden Username"
+
+	if (!(ValidateEmailAddress -email $userEmail)) {
+		Write-Host -ForegroundColor Red "ERROR:" -NoNewline
+		Write-Host " Invalid email address. Script halted."
+		exit 1
+	}
 
 	$saveFolder = Join-Path (Get-Location) $userEmail
 
