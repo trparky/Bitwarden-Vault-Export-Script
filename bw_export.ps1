@@ -251,14 +251,6 @@ try {
 	Write-Host "Performing vault exports..."
 	Write-Host ""
 
-	# 1. Export the personal vault
-	if (!(Test-Path $saveFolder)) {
-		LockAndLogout
-		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
-		Write-Host " Could not find the folder in which to save the files."
-		exit 1
-	}
-
 	if (!$encryptedDataBackup) {
 		Write-Host "Exporting personal vault to an unencrypted file..."
 		./bw export --format json --output $saveFolder
