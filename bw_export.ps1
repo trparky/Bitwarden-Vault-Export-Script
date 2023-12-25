@@ -177,7 +177,7 @@ try {
 	}
 
 	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
-		Write-Host -ForegroundColor Red "Error:" -NoNewLine
+		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 		Write-Host " Failed to authenticate."
 		exit 1
 	}
@@ -188,7 +188,7 @@ try {
 
 	# Verify that unlock succeeded
 	if ([String]::IsNullOrWhiteSpace($sessionKey)) {
-		Write-Host -ForegroundColor Red "Error:" -NoNewLine
+		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 		Write-Host " Failed to authenticate."
 		exit 1
 	}
@@ -212,7 +212,7 @@ try {
 		$password2Text = ConvertSecureString -String $password2
 
 		if ($password1Text -ne $password2Text) {
-			Write-Host -ForegroundColor Red "Error:" -NoNewLine
+			Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 			Write-Host " The passwords did not match."
 			LockAndLogout
 			$env:BW_SESSION = ""
@@ -254,7 +254,7 @@ try {
 	# 1. Export the personal vault
 	if (!(Test-Path $saveFolder)) {
 		LockAndLogout
-		Write-Host -ForegroundColor Red "Error:" -NoNewLine
+		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 		Write-Host " Could not find the folder in which to save the files."
 		exit 1
 	}
