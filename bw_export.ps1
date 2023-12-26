@@ -256,7 +256,7 @@ try {
 	}
 	else {
 		Write-Host "Exporting personal vault to a password-encrypted file..."
-		./bw export --format encrypted_json --password $password1PlainText --output $saveFolder
+		./bw export --format encrypted_json --password "$password1PlainText" --output $saveFolder
 		Write-Host ""
 	}
 
@@ -274,7 +274,7 @@ try {
   			}
   			else {
   				Write-Host "Exporting organization vault for organization ""$organizationName"" to a password-encrypted file..."
-  				./bw export --organizationid $organizationID --format encrypted_json --password $password1PlainText --output $saveFolder
+  				./bw export --organizationid $organizationID --format encrypted_json --password "$password1PlainText" --output $saveFolder
   				Write-Host ""
   			}
   		}
