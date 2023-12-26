@@ -165,15 +165,15 @@ try {
 	if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
 	# Prompt user for their Bitwarden password
-	$bwPassword = Read-Host "Enter your Bitwarden Password" -AsSecureString
+	$bwPasswordEncrypted = Read-Host "Enter your Bitwarden Password" -AsSecureString
 
 	Write-Host ""
 
 	# Login user if not already authenticated
 	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 		Write-Host "Performing login..."
-		$bwPasswordText = ConvertSecureString -String $bwPassword
-		./bw login $userEmail $bwPasswordText --quiet
+		$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
+		./bw login $userEmail $bwPasswordPlainText --quiet
 	}
 
 	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
@@ -183,8 +183,8 @@ try {
 	}
 
 	# Unlock the vault
-	$bwPasswordText = ConvertSecureString -String $bwPassword
-	$sessionKey = (./bw unlock "$bwPasswordText" --raw) | Out-String
+	$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
+	$sessionKey = (./bw unlock "$bwPasswordPlainText" --raw) | Out-String
 
 	# Verify that unlock succeeded
 	if ([String]::IsNullOrWhiteSpace($sessionKey)) {
@@ -203,23 +203,23 @@ try {
 
 	if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
 		# Prompt the user for an encryption password
-		$password1 = Read-Host "Enter a password to encrypt your vault" -AsSecureString
-		$password1Text = ConvertSecureString -String $password1
+		$password1Encrypted = Read-Host "Enter a password to encrypt your vault" -AsSecureString
+		$password1PlainText = ConvertSecureString -String $password1Encrypted
 
-		$password2 = Read-Host "Enter the same password for verification" -AsSecureString
-		$password2Text = ConvertSecureString -String $password2
+		$password2Encrypted = Read-Host "Enter the same password for verification" -AsSecureString
+		$password2PlainText = ConvertSecureString -String $password2Encrypted
 
-		if ($password1Text -ne $password2Text) {
+		if ($password1PlainText -ne $password2PlainText) {
 			Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 			Write-Host " The passwords did not match."
 			LockAndLogout
 			$env:BW_SESSION = ""
-			$bwPassword = ""
-			$bwPasswordText = ""
-			$password1 = ""
-			$password1Text = ""
-			$password2 = ""
-			$password2Text = ""
+			$bwPasswordEncrypted = ""
+			$bwPasswordPlainText = ""
+			$password1Encrypted = ""
+			$password1PlainText = ""
+			$password2Encrypted = ""
+			$password2PlainText = ""
 			exit 1
 		}
 		else {
@@ -235,12 +235,12 @@ try {
 			LockAndLogout
 			Write-Host "Exiting script."
 			$env:BW_SESSION = ""
-			$bwPassword = ""
-			$bwPasswordText = ""
-			$password1 = ""
-			$password1Text = ""
-			$password2 = ""
-			$password2Text = ""
+			$bwPasswordEncrypted = ""
+			$bwPasswordPlainText = ""
+			$password1Encrypted = ""
+			$password1PlainText = ""
+			$password2Encrypted = ""
+			$password2PlainText = ""
 			exit 1
 		}
 	}
@@ -256,7 +256,7 @@ try {
 	}
 	else {
 		Write-Host "Exporting personal vault to a password-encrypted file..."
-		./bw export --format encrypted_json --password $password1Text --output $saveFolder
+		./bw export --format encrypted_json --password $password1PlainText --output $saveFolder
 		Write-Host ""
 	}
 
@@ -274,7 +274,7 @@ try {
   			}
   			else {
   				Write-Host "Exporting organization vault for organization ""$organizationName"" to a password-encrypted file..."
-  				./bw export --organizationid $organizationID --format encrypted_json --password $password1Text --output $saveFolder
+  				./bw export --organizationid $organizationID --format encrypted_json --password $password1PlainText --output $saveFolder
   				Write-Host ""
   			}
   		}
@@ -318,8 +318,8 @@ try {
 		Write-Host "Compressing backup..."
 		Set-Location $saveFolder
 
-		$zipfiletestpath = Join-Path ".." "$userEmail.zip"
-		if (Test-Path $zipfiletestpath) { Remove-Item $zipfiletestpath }
+		$zipFileTestPath = Join-Path ".." "$userEmail.zip"
+		if (Test-Path $zipFileTestPath) { Remove-Item $zipFileTestPath }
 
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
 		Move-Item "$userEmail.zip" ..
@@ -331,10 +331,10 @@ try {
 }
 finally {
 	$env:BW_SESSION = ""
-	$bwPassword = ""
-	$bwPasswordText = ""
-	$password1 = ""
-	$password1Text = ""
-	$password2 = ""
-	$password2Text = ""
+	$bwPasswordEncrypted = ""
+	$bwPasswordPlainText = ""
+	$password1Encrypted = ""
+	$password1PlainText = ""
+	$password2Encrypted = ""
+	$password2PlainText = ""
 }
