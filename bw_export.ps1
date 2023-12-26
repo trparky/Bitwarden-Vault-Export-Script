@@ -90,6 +90,39 @@ try {
 		}
 	}
 
+	function ConvertSecureString {
+		param (
+			[System.Security.SecureString]$String
+		)
+
+		if ($String.Length -eq 0) { return "" }
+		else {
+			$output = ConvertFrom-SecureString -SecureString $String -AsPlainText
+			return $output.Trim()
+		}
+	}
+
+	function AskYesNoQuestion {
+		param (
+			[String]$prompt
+		)
+
+		$answer = ""
+		do {
+			$answer = (Read-Host $prompt).ToLower().Trim()
+		} while ($answer -ne 'y' -and $answer -ne 'n')
+
+		return $answer
+	}
+
+	function LockAndLogout {
+	      	./bw lock
+	      	Write-Host ""
+
+	      	./bw logout
+	      	Write-Host ""
+	}
+
 	if ($IsWindows) { $bwCliBinName = (Join-Path (Get-Location) "bw.exe") }
 	else { $bwCliBinName = (Join-Path (Get-Location) "bw") }
 
@@ -130,39 +163,6 @@ try {
 	$saveFolderAttachments = Join-Path $saveFolder "attachments"
 
 	if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
-
-	function ConvertSecureString {
-		param (
-			[System.Security.SecureString]$String
-		)
-
-		if ($String.Length -eq 0) { return "" }
-		else {
-			$output = ConvertFrom-SecureString -SecureString $String -AsPlainText
-			return $output.Trim()
-		}
-	}
-
-	function AskYesNoQuestion {
-		param (
-			[String]$prompt
-		)
-
-		$answer = ""
-		do {
-			$answer = (Read-Host $prompt).ToLower().Trim()
-		} while ($answer -ne 'y' -and $answer -ne 'n')
-
-		return $answer
-	}
-
-	function LockAndLogout {
-	      	./bw lock
-	      	Write-Host ""
-
-	      	./bw logout
-	      	Write-Host ""
-	}
 
 	# Prompt user for their Bitwarden password
 	$bwPassword = Read-Host "Enter your Bitwarden Password" -AsSecureString
