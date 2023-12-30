@@ -132,17 +132,15 @@ try {
 		Get-Date | Out-File -FilePath (Join-Path (Get-Location) "lastcheckforupdate.txt") -NoNewline
 	}
 	else {
-		if ($checkForBWCliUpdate) {
-			if (ShouldWeCheckForABWCLIUpdate) {
-				$localBWCliVersion = ((./bw --version) | Out-String).Trim()
-				$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
+		if (($checkForBWCliUpdate) -and (ShouldWeCheckForABWCLIUpdate)) {
+			$localBWCliVersion = ((./bw --version) | Out-String).Trim()
+      			$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
 
-				if ($localBWCliVersion -ne $remoteBWCliVersion) {
-					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
-					Remove-Item $bwCliBinName
-					DownloadBWCli
-				}
-			}
+      			if ($localBWCliVersion -ne $remoteBWCliVersion) {
+      				Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
+      				Remove-Item $bwCliBinName
+      				DownloadBWCli
+      			}
 		}
 	}
 
