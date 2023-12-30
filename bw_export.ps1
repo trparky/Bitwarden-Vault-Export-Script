@@ -179,7 +179,7 @@ try {
 		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 			Write-Host "Performing login..."
 			$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
-			./bw login $userEmail $bwPasswordPlainText --quiet
+			./bw login "$userEmail" "$bwPasswordPlainText" --quiet
 		}
 
 		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
