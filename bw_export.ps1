@@ -144,6 +144,13 @@ try {
 		}
 	}
 
+	if ((./bw status | ConvertFrom-Json).status -eq "unlocked") {
+		Write-Host -ForegroundColor Green "Notice:" -NoNewLine
+		Write-Host " Active Bitwarden CLI login session detected, using existing login session."
+		Write-Host "The next step will ask for your Bitwarden username but only for the sake of knowing where to save your exported data."
+		Write-Host ""
+	}
+
 	# Prompt user for their Bitwarden username
 	$userEmail = Read-Host "Enter your Bitwarden Username"
 
@@ -162,38 +169,40 @@ try {
 
 	if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
-	# Prompt user for their Bitwarden password
-	$bwPasswordEncrypted = Read-Host "Enter your Bitwarden Password" -AsSecureString
+	if ((./bw status | ConvertFrom-Json).status -ne "unlocked") {
+		# Prompt user for their Bitwarden password
+		$bwPasswordEncrypted = Read-Host "Enter your Bitwarden Password" -AsSecureString
 
-	Write-Host ""
+		Write-Host ""
 
-	# Login user if not already authenticated
-	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
-		Write-Host "Performing login..."
+		# Login user if not already authenticated
+		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
+			Write-Host "Performing login..."
+			$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
+			./bw login $userEmail $bwPasswordPlainText --quiet
+		}
+
+		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
+			Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
+			Write-Host " Failed to authenticate."
+			exit 1
+		}
+
+		# Unlock the vault
 		$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
-		./bw login $userEmail $bwPasswordPlainText --quiet
+		$sessionKey = (./bw unlock "$bwPasswordPlainText" --raw) | Out-String
+
+		# Verify that unlock succeeded
+		if ([String]::IsNullOrWhiteSpace($sessionKey)) {
+			Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
+			Write-Host " Failed to authenticate."
+			exit 1
+		}
+		else { Write-Host "Login successful." }
+
+		# Export the session key as an env variable (needed by bw.exe CLI)
+		$env:BW_SESSION = $sessionKey
 	}
-
-	if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
-		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
-		Write-Host " Failed to authenticate."
-		exit 1
-	}
-
-	# Unlock the vault
-	$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
-	$sessionKey = (./bw unlock "$bwPasswordPlainText" --raw) | Out-String
-
-	# Verify that unlock succeeded
-	if ([String]::IsNullOrWhiteSpace($sessionKey)) {
-		Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
-		Write-Host " Failed to authenticate."
-		exit 1
-	}
-	else { Write-Host "Login successful." }
-
-	# Export the session key as an env variable (needed by bw.exe CLI)
-	$env:BW_SESSION = $sessionKey
 
 	$encryptedDataBackup = $false
 
