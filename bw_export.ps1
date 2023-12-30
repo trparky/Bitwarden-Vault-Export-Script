@@ -322,7 +322,7 @@ try {
 	LockAndLogout
 
 	if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
-		Write-Host "Compressing backup..."
+		Write-Host "Compressing backup..." -NoNewLine
 		Set-Location -Path $saveFolder
 
 		$zipFileTestPath = Join-Path ".." "$userEmail.zip"
@@ -332,6 +332,8 @@ try {
 		Move-Item -Path "$userEmail.zip" -Destination ..
 		Set-Location -Path ..
 		Remove-Item -Path $saveFolder -Recurse -Force
+
+		Write-Host " Done."
 	}
 
 	Write-Host -ForegroundColor Green "Script completed."
