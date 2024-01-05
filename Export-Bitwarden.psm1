@@ -293,7 +293,7 @@ function Export-Bitwarden { # Don't touch this line!
 
 		# 3. Download all attachments (file backup)
 		# First download attachments in vault
-		$itemsWithAttachments = (& $bwCliBinName list items | ConvertFrom-Json | Where-Object { $_.attachments -ne $null })
+		$itemsWithAttachments = (& $bwCliBinName list items | ConvertFrom-Json | Where-Object { $null -ne $_.attachments })
 
 		if ($itemsWithAttachments.Count -gt 0) {
 			Write-Host "Saving attachments..."
