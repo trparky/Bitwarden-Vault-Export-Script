@@ -160,7 +160,7 @@ function Export-Bitwarden { # Don't touch this line!
 		if (!(ValidateEmailAddress -email $userEmail)) {
 			Write-Host -ForegroundColor Red "ERROR:" -NoNewline
 			Write-Host " Invalid email address. Script halted."
-			exit 1
+			return
 		}
 
 		$saveFolder = Join-Path (Get-Location) $userEmail
@@ -188,7 +188,7 @@ function Export-Bitwarden { # Don't touch this line!
 			if ((& $bwCliBinName status | ConvertFrom-Json).status -eq "unauthenticated") {
 				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 				Write-Host " Failed to authenticate."
-				exit 1
+				return
 			}
 
 			# Unlock the vault
@@ -199,7 +199,7 @@ function Export-Bitwarden { # Don't touch this line!
 			if ([String]::IsNullOrWhiteSpace($sessionKey)) {
 				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 				Write-Host " Failed to authenticate."
-				exit 1
+				return
 			}
 			else { Write-Host "Login successful." }
 
@@ -230,7 +230,7 @@ function Export-Bitwarden { # Don't touch this line!
 				$password1PlainText = ""
 				$password2Encrypted = ""
 				$password2PlainText = ""
-				exit 1
+				return
 			}
 			else {
 				Write-Host "Password verified. Be sure to save your password in a safe place!"
@@ -251,7 +251,7 @@ function Export-Bitwarden { # Don't touch this line!
 				$password1PlainText = ""
 				$password2Encrypted = ""
 				$password2PlainText = ""
-				exit 1
+				return
 			}
 		}
 
