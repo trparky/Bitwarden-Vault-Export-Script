@@ -26,26 +26,27 @@ try {
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.22                         =="
 	Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
+	Write-Host -ForegroundColor Green "==              https://github.com/trparky/Bitwarden-Vault-Export-Script              =="
 	Write-Host -ForegroundColor Green "========================================================================================"
 	Write-Host ""
 
 	function DownloadBWCli {
 		$zipFilePath = (Join-Path (Get-Location) "bw.zip")
 
-		if ($IsWindows) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=windows" -OutFile $zipFilePath }
-		elseif ($IsLinux) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=linux" -OutFile $zipFilePath }
-		elseif ($IsMacOS) { Invoke-WebRequest "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
+		if ($IsWindows) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=windows" -OutFile $zipFilePath }
+		elseif ($IsLinux) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=linux" -OutFile $zipFilePath }
+		elseif ($IsMacOS) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
 
 		Expand-Archive -Path $zipFilePath
 
 		if ($IsLinux || $IsMacOS) {
-			Move-Item (Join-Path (Get-Location) "bw" "bw") (Join-Path (Get-Location) "bw.tmp")
+			Move-Item -Path (Join-Path (Get-Location) "bw" "bw") -Destination (Join-Path (Get-Location) "bw.tmp")
 			Remove-Item -Force (Join-Path (Get-Location) "bw")
-			Move-Item (Join-Path (Get-Location) "bw.tmp") (Join-Path (Get-Location) "bw")
+			Move-Item -Path (Join-Path (Get-Location) "bw.tmp") -Destination (Join-Path (Get-Location) "bw")
 			chmod 755 (Join-Path (Get-Location) "bw")
 		}
 
-		Remove-Item $zipFilePath
+		Remove-Item -Path $zipFilePath
 
 		Write-Host " Done."
 		Write-Host ""
@@ -138,7 +139,7 @@ try {
 
       			if ($localBWCliVersion -ne $remoteBWCliVersion) {
       				Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
-      				Remove-Item $bwCliBinName
+      				Remove-Item -Path $bwCliBinName
       				DownloadBWCli
       			}
 		}
@@ -179,7 +180,7 @@ try {
 		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
 			Write-Host "Performing login..."
 			$bwPasswordPlainText = ConvertSecureString -String $bwPasswordEncrypted
-			./bw login $userEmail $bwPasswordPlainText --quiet
+			./bw login "$userEmail" "$bwPasswordPlainText" --quiet
 		}
 
 		if ((./bw status | ConvertFrom-Json).status -eq "unauthenticated") {
@@ -322,16 +323,18 @@ try {
 	LockAndLogout
 
 	if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
-		Write-Host "Compressing backup..."
-		Set-Location $saveFolder
+		Write-Host "Compressing backup..." -NoNewLine
+		Set-Location -Path $saveFolder
 
 		$zipFileTestPath = Join-Path ".." "$userEmail.zip"
-		if (Test-Path $zipFileTestPath) { Remove-Item $zipFileTestPath }
+		if (Test-Path $zipFileTestPath) { Remove-Item -Path $zipFileTestPath }
 
 		Compress-Archive -Path * -DestinationPath "$userEmail.zip" -Force
-		Move-Item "$userEmail.zip" ..
-		Set-Location ..
-		Remove-Item $saveFolder -Recurse -Force
+		Move-Item -Path "$userEmail.zip" -Destination ..
+		Set-Location -Path ..
+		Remove-Item -Path $saveFolder -Recurse -Force
+
+		Write-Host " Done."
 	}
 
 	Write-Host -ForegroundColor Green "Script completed."
