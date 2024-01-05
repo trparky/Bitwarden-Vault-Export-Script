@@ -13,6 +13,6 @@ else {
 	else {
 		Write-Host "Installing module..." -NoNewLine
 		Add-Content -Path $PROFILE -Value $contentToAppend -Encoding UTF8
-		Write-Host " Done".
+		Write-Host " Done."
 	}
 }
