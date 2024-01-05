@@ -3,8 +3,10 @@ $contentToAppend = "`n`$ExportBitwardenScriptPath = ""$path""
 if (Test-Path(`$ExportBitwardenScriptPath)) { Import-Module `$ExportBitwardenScriptPath }"
 
 if (!(Test-Path -Path $PROFILE)) {
+	Write-Host "Installing module..." -NoNewLine
 	New-Item -Path $PROFILE -ItemType File -Force
 	Add-Content -Path $filePath -Value $contentToAppend -Encoding UTF8
+	Write-Host " Done."
 }
 else {
 	$file_contents = Get-Content -Path $PROFILE -Raw
