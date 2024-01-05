@@ -7,5 +7,12 @@ if (!(Test-Path -Path $PROFILE)) {
 	Add-Content -Path $filePath -Value $contentToAppend -Encoding UTF8
 }
 else {
-	Add-Content -Path $PROFILE -Value $contentToAppend -Encoding UTF8
+	$file_contents = Get-Content -Path $PROFILE -Raw
+
+	if ($file_contents.Contains("Export-Bitwarden.psd1")) { Write-Host "Module already installed." }
+	else {
+		Write-Host "Installing module..." -NoNewLine
+		Add-Content -Path $PROFILE -Value $contentToAppend -Encoding UTF8
+		Write-Host " Done".
+	}
 }
