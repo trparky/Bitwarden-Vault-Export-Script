@@ -11,7 +11,21 @@ if (!(Test-Path -Path $PROFILE)) {
 else {
 	$file_contents = Get-Content -Path $PROFILE -Raw
 
-	if ($file_contents.Contains("Export-Bitwarden.psd1")) { Write-Host "Module already installed." }
+	if ($file_contents.Contains("Export-Bitwarden.psd1")) {
+		if ($file_contents -cmatch '\$ExportBitwardenScriptPath = "([]\t !"#$%&''()*+,./0-9:;<=>?@A-Z[\\_`a-z{|}~^-]{10,}\.psd1)"') {
+			$ExportBitwardenScriptPath = $matches[1]
+
+			if ($ExportBitwardenScriptPath.ToLower().Trim() -eq $path.ToLower()) {
+				Write-Host "Module already installed."
+			}
+			else {
+				Write-Host "Module path found, but not correct. Correcting path..." -NoNewline
+				$file_contents = $file_contents -creplace '\$ExportBitwardenScriptPath = "([]\t !"#$%&''()*+,./0-9:;<=>?@A-Z[\\_`a-z{|}~^-]{10,}\.psd1)"', "`$ExportBitwardenScriptPath = ""$path"""
+				$file_contents | Out-File -FilePath $PROFILE -NoNewline
+				Write-Host " Done."
+			}
+		}
+	}
 	else {
 		Write-Host "Installing module..." -NoNewLine
 		Add-Content -Path $PROFILE -Value $contentToAppend -Encoding UTF8
