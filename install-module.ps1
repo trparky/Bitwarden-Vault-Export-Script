@@ -22,13 +22,13 @@ else {
 				Write-Host "Module path found, but not correct. Correcting path..." -NoNewline
 				$file_contents = $file_contents -creplace '\$ExportBitwardenScriptPath = "([]\t !"#$%&''()*+,./0-9:;<=>?@A-Z[\\_`a-z{|}~^-]{10,}\.psd1)"', "`$ExportBitwardenScriptPath = ""$path"""
 				$file_contents | Out-File -FilePath $PROFILE -NoNewline
-				Write-Host " Done."
+				Write-Host " Done. You will now have to restart the Powershell shell for the changes to take effect."
 			}
 		}
 	}
 	else {
 		Write-Host "Installing module..." -NoNewLine
 		Add-Content -Path $PROFILE -Value $contentToAppend -Encoding UTF8
-		Write-Host " Done."
+		Write-Host " Done. You will now have to restart the Powershell shell for the changes to take effect."
 	}
 }
