@@ -149,14 +149,15 @@ function Export-Bitwarden { # Don't touch this line!
 					Write-Host " Script executed with ForceBWCliUpdate flag."
 					Write-Host ""
 				}
-				$localBWCliVersion = ((& $bwCliBinName --version) | Out-String).Trim()
-	      		$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
 
-	      		if ($localBWCliVersion -ne $remoteBWCliVersion) {
-	      			Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
-	      			Remove-Item -Path $bwCliBinName
-	      			DownloadBWCli
-	      		}
+				$localBWCliVersion = ((& $bwCliBinName --version) | Out-String).Trim()
+				$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
+
+				if ($localBWCliVersion -ne $remoteBWCliVersion) {
+					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
+					Remove-Item -Path $bwCliBinName
+					DownloadBWCli
+				}
 			}
 		}
 
