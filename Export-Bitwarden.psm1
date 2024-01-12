@@ -13,12 +13,16 @@
 # Converted to a PowerShell Script by Thomas Parkison.
 
 function Export-Bitwarden { # Don't touch this line!
+	param (
+		[switch]$forcebwcliupdate
+	)
 
 	# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
 	# It does this by taking the version of your currently existing Bitwarden CLI and comparing it to the version that's contained in a small text file that's on my GitHub
 	# page. Now, if you don't want this to happen, you can disable this kind of functionality in the script by setting the value of the $checkForBWCliUpdate to $false.
 	# However, it's highly recommended that you do keep this setting enabled since keeping your Bitwarden CLI up to date is obviously a good thing to do.
 	$checkForBWCliUpdate = $true
+	if ($forcebwcliupdate) { $checkForBWCliUpdate = $true }
 
 	try {
 		# ====================================================
@@ -136,7 +140,12 @@ function Export-Bitwarden { # Don't touch this line!
 			Get-Date | Out-File -FilePath (Join-Path $PSScriptRoot "lastcheckforupdate.txt") -NoNewline
 		}
 		else {
-			if (($checkForBWCliUpdate) -and (ShouldWeCheckForABWCLIUpdate)) {
+			if (($checkForBWCliUpdate) -and (($forcebwcliupdate) -or (ShouldWeCheckForABWCLIUpdate))) {
+				if ($forcebwcliupdate) {
+					Write-Host -ForegroundColor Green "Notice:" -NoNewLine
+					Write-Host " Script executed with ForceBWCliUpdate flag."
+					Write-Host ""
+				}
 				$localBWCliVersion = ((& $bwCliBinName --version) | Out-String).Trim()
 	      			$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
 
