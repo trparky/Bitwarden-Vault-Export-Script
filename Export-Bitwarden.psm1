@@ -44,7 +44,10 @@ function Export-Bitwarden { # Don't touch this line!
 			elseif ($IsMacOS) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
 
 			if ($IsWindows) { Expand-Archive -Path $zipFilePath -OutputPath $PSScriptRoot }
-			else { Expand-Archive -Path $zipFilePath }
+			else {
+				Set-Location -Path $PSScriptRoot
+				Expand-Archive -Path $zipFilePath
+			}
 
 			if ($IsLinux || $IsMacOS) {
 				Move-Item -Path (Join-Path $PSScriptRoot "bw" "bw") -Destination (Join-Path $PSScriptRoot "bw.tmp")
