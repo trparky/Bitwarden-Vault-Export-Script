@@ -30,7 +30,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# ====================================================
 
 		Write-Host -ForegroundColor Green "========================================================================================"
-		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.28                         =="
+		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.29                         =="
 		Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 		Write-Host -ForegroundColor Green "==              https://github.com/trparky/Bitwarden-Vault-Export-Script              =="
 		Write-Host -ForegroundColor Green "========================================================================================"
