@@ -29,12 +29,26 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
+		$ver = "1.30"
+
 		Write-Host -ForegroundColor Green "========================================================================================"
-		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v1.29                         =="
+		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
 		Write-Host -ForegroundColor Green "== Originally created by David H, converted to a Powershell Script by Thomas Parkison =="
 		Write-Host -ForegroundColor Green "==              https://github.com/trparky/Bitwarden-Vault-Export-Script              =="
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host ""
+
+		try {
+			$jsonData = (Invoke-WebRequest -Uri "https://api.github.com/repos/trparky/Bitwarden-Vault-Export-Script/releases/latest").Content | ConvertFrom-Json
+			$scriptVersionFromWeb = ($jsonData.tag_name) -replace "v", ""
+		}
+		catch { $scriptVersionFromWeb = $ver }
+
+		if ($scriptVersionFromWeb -ne $ver) {
+			Write-Host -ForegroundColor Green "Notice:" -NoNewline
+			Write-Host " There is an update to this script, please go to https://github.com/trparky/Bitwarden-Vault-Export-Script and download the new version."
+			Write-Host ""
+		}
 
 		function DownloadBWCli {
 			$zipFilePath = (Join-Path $PSScriptRoot "bw.zip")
