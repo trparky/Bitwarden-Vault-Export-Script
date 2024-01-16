@@ -16,5 +16,7 @@ Yes, this is open source and licensed under the MIT license. What does this mean
 
 # Install from the Powershell Gallery
 Installing this module is now even easier, all you have to do is execute...
+
 Install-Module -Name Export-Bitwarden
+
 And away you go. So much easier.
