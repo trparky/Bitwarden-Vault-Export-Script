@@ -13,3 +13,8 @@ All active development will now take place in the dev branch.
 
 # Open Source!!!
 Yes, this is open source and licensed under the MIT license. What does this mean? It means that you, the user, can fork this project, make your additions, and create a pull request for me to include your additions and improvements back to the original script. Isn't open source cool? I think so!
+
+# Install from the Powershell Gallery
+Installing this module is now even easier, all you have to do is execute...
+Install-Module -Name Export-Bitwarden
+And away you go. So much easier.
