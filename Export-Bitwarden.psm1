@@ -24,12 +24,14 @@ function Export-Bitwarden { # Don't touch this line!
 	$checkForBWCliUpdate = $true
 	if ($forcebwcliupdate) { $checkForBWCliUpdate = $true }
 
+	$currentLocation = Get-Location
+
 	try {
 		# ====================================================
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.32"
+		$ver = "1.33"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -377,5 +379,6 @@ function Export-Bitwarden { # Don't touch this line!
 		$password1PlainText = ""
 		$password2Encrypted = ""
 		$password2PlainText = ""
+		Set-Location -Path $currentLocation
 	}
 }
