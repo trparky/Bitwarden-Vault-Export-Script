@@ -29,15 +29,17 @@ function Export-Bitwarden { # Don't touch this line!
 	if ($IsWindows) { $bwCliBinName = (Join-Path $PSScriptRoot "bw.exe") }
 	else { $bwCliBinName = (Join-Path $PSScriptRoot "bw") }
 
-	& $bwCliBinName logout | Out-Null
-	$env:BW_SESSION = ""
+	if ((& $bwCliBinName status | ConvertFrom-Json).status -ne "unauthenticated") {
+		& $bwCliBinName logout
+		$env:BW_SESSION = ""
+	}
 
 	try {
 		# ====================================================
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.35"
+		$ver = "1.36"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
