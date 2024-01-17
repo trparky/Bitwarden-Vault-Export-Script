@@ -26,18 +26,12 @@ function Export-Bitwarden { # Don't touch this line!
 
 	$currentLocation = Get-Location
 
-	if ($IsWindows) { $bwCliBinName = (Join-Path $PSScriptRoot "bw.exe") }
-	else { $bwCliBinName = (Join-Path $PSScriptRoot "bw") }
-
-	& $bwCliBinName logout | Out-Null
-	$env:BW_SESSION = ""
-
 	try {
 		# ====================================================
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.35"
+		$ver = "1.34"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -162,6 +156,9 @@ function Export-Bitwarden { # Don't touch this line!
 		      	& $bwCliBinName logout
 		      	Write-Host ""
 		}
+
+		if ($IsWindows) { $bwCliBinName = (Join-Path $PSScriptRoot "bw.exe") }
+		else { $bwCliBinName = (Join-Path $PSScriptRoot "bw") }
 
 		if (!(Test-Path -Path $bwCliBinName)) {
 			Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
@@ -382,7 +379,6 @@ function Export-Bitwarden { # Don't touch this line!
 		Write-Host -ForegroundColor Green "Script completed."
 	}
 	finally {
-		& $bwCliBinName logout | Out-Null
 		$env:BW_SESSION = ""
 		$bwPasswordEncrypted = ""
 		$bwPasswordPlainText = ""
