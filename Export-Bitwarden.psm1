@@ -31,7 +31,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.33"
+		$ver = "1.34"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -48,7 +48,14 @@ function Export-Bitwarden { # Don't touch this line!
 
 		if ($scriptVersionFromWeb -ne $ver) {
 			Write-Host -ForegroundColor Green "Notice:" -NoNewline
-			Write-Host " There is an update to this script, please go to https://github.com/trparky/Bitwarden-Vault-Export-Script and download the new version."
+
+			if ($PSScriptRoot -Match "powershell/Modules" || $PSScriptRoot -Match "powershell\\Modules") {
+				Write-Host " There is an update to this script, please execute Update-Module at the Powershell prompt."
+			}
+			else {
+				Write-Host " There is an update to this script, please go to https://github.com/trparky/Bitwarden-Vault-Export-Script and download the new version."
+			}
+
 			Write-Host ""
 		}
 
