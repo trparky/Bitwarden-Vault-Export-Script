@@ -12,7 +12,7 @@
 RootModule = 'Export-Bitwarden.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.34'
+ModuleVersion = '1.37'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
