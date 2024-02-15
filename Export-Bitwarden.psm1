@@ -31,7 +31,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.39"
+		$ver = "1.40"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -76,8 +76,10 @@ function Export-Bitwarden { # Don't touch this line!
 				chmod 755 (Join-Path $PSScriptRoot "bw")
 			}
 			elseif ($IsWindows) {
-				Move-Item -Path (Join-Path $PSScriptRoot "bw" "bw.exe") -Destination (Join-Path $PSScriptRoot "bw.exe")
-				Remove-Item -Force (Join-Path $PSScriptRoot "bw")
+				if (Test-Path -Path (Join-Path $PSScriptRoot "bw" "bw.exe")) {
+					Move-Item -Path (Join-Path $PSScriptRoot "bw" "bw.exe") -Destination (Join-Path $PSScriptRoot "bw.exe")
+					Remove-Item -Force (Join-Path $PSScriptRoot "bw")
+				}
 			}
 
 			Remove-Item -Path $zipFilePath
