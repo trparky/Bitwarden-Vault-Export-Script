@@ -31,7 +31,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.38"
+		$ver = "1.39"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -66,17 +66,18 @@ function Export-Bitwarden { # Don't touch this line!
 			elseif ($IsLinux) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=linux" -OutFile $zipFilePath }
 			elseif ($IsMacOS) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
 
-			if ($IsWindows) { Microsoft.PowerShell.Archive\Expand-Archive -Path $zipFilePath -OutputPath $PSScriptRoot }
-			else {
-				Set-Location -Path $PSScriptRoot
-				Expand-Archive -Path $zipFilePath
-			}
+			Set-Location -Path $PSScriptRoot
+			Expand-Archive -Path $zipFilePath
 
 			if ($IsLinux || $IsMacOS) {
 				Move-Item -Path (Join-Path $PSScriptRoot "bw" "bw") -Destination (Join-Path $PSScriptRoot "bw.tmp")
 				Remove-Item -Force (Join-Path $PSScriptRoot "bw")
 				Move-Item -Path (Join-Path $PSScriptRoot "bw.tmp") -Destination (Join-Path $PSScriptRoot "bw")
 				chmod 755 (Join-Path $PSScriptRoot "bw")
+			}
+			elseif ($IsWindows) {
+				Move-Item -Path (Join-Path $PSScriptRoot "bw" "bw.exe") -Destination (Join-Path $PSScriptRoot "bw.exe")
+				Remove-Item -Force (Join-Path $PSScriptRoot "bw")
 			}
 
 			Remove-Item -Path $zipFilePath
