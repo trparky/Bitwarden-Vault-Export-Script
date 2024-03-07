@@ -14,7 +14,8 @@
 
 function Export-Bitwarden { # Don't touch this line!
 	param (
-		[switch]$forcebwcliupdate
+		[switch]$forcebwcliupdate,
+		[switch]$forcelogpout
 	)
 
 	# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
@@ -31,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.40"
+		$ver = "1.41"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -192,6 +193,19 @@ function Export-Bitwarden { # Don't touch this line!
 			Write-Host " Active Bitwarden CLI login session detected, using existing login session."
 			Write-Host "The next step will ask for your Bitwarden username but only for the sake of knowing where to save your exported data."
 			Write-Host ""
+		}
+
+		if ($forcelogpout) {
+      			LockAndLogout
+      			Write-Host "Exiting script."
+      			$env:BW_SESSION = ""
+      			$bwPasswordEncrypted = ""
+      			$bwPasswordPlainText = ""
+      			$password1Encrypted = ""
+      			$password1PlainText = ""
+      			$password2Encrypted = ""
+      			$password2PlainText = ""
+      			return
 		}
 
 		# Prompt user for their Bitwarden username
