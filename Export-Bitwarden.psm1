@@ -32,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.41"
+		$ver = "1.42"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -217,7 +217,7 @@ function Export-Bitwarden { # Don't touch this line!
 			return
 		}
 
-		$saveFolder = Join-Path (Get-Location) $userEmail
+		$saveFolder = Join-Path $currentLocation $userEmail
 
 		if ($IsWindows) { $saveFolder = $saveFolder + "\" }
 		else { $saveFolder = $saveFolder + "/" }
