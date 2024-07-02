@@ -15,7 +15,7 @@
 function Export-Bitwarden { # Don't touch this line!
 	param (
 		[switch]$forcebwcliupdate,
-		[switch]$forcelogpout
+		[switch]$forcelogout
 	)
 
 	# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
@@ -32,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.42"
+		$ver = "1.43"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -195,7 +195,7 @@ function Export-Bitwarden { # Don't touch this line!
 			Write-Host ""
 		}
 
-		if ($forcelogpout) {
+		if ($forcelogout) {
       			LockAndLogout
       			Write-Host "Exiting script."
       			$env:BW_SESSION = ""
