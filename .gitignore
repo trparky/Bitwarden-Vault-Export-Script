@@ -5,3 +5,6 @@ Package and Upload.bat
 ftpCommands.txt
 Export-Bitwarden.zip
 *.zip
+Upload Instructions.txt
+Upload From Here/Export-Bitwarden.psm1
+Upload From Here/Export-Bitwarden.psd1
