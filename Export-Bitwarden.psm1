@@ -63,9 +63,11 @@ function Export-Bitwarden { # Don't touch this line!
 		function DownloadBWCli {
 			$zipFilePath = (Join-Path $PSScriptRoot "bw.zip")
 
-			if ($IsWindows) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=windows" -OutFile $zipFilePath }
-			elseif ($IsLinux) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=linux" -OutFile $zipFilePath }
-			elseif ($IsMacOS) { Invoke-WebRequest -Uri "https://vault.bitwarden.com/download/?app=cli&platform=macos" -OutFile $zipFilePath }
+			$baseDownloadURL = "https://vault.bitwarden.com/download/?app=cli&platform="
+
+			if ($IsWindows) { Invoke-WebRequest -Uri ($baseDownloadURL + "windows") -OutFile $zipFilePath }
+			elseif ($IsLinux) { Invoke-WebRequest -Uri ($baseDownloadURL + "linux") -OutFile $zipFilePath }
+			elseif ($IsMacOS) { Invoke-WebRequest -Uri ($baseDownloadURL + "macos") -OutFile $zipFilePath }
 
 			Set-Location -Path $PSScriptRoot
 			Expand-Archive -Path $zipFilePath
