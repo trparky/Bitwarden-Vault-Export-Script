@@ -32,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.44"
+		$ver = "1.45"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -176,17 +176,22 @@ function Export-Bitwarden { # Don't touch this line!
 			if (($checkForBWCliUpdate) -and (($forcebwcliupdate) -or (ShouldWeCheckForABWCLIUpdate))) {
 				if ($forcebwcliupdate) {
 					Write-Host -ForegroundColor Green "Notice:" -NoNewLine
-					Write-Host " Script executed with ForceBWCliUpdate flag."
-					Write-Host ""
+					Write-Host " Script executed with ForceBWCliUpdate flag." -NoNewLine
 				}
 
 				$localBWCliVersion = ((& $bwCliBinName --version) | Out-String).Trim()
 				$remoteBWCliVersion = (Invoke-WebRequest -Uri "https://trparky.github.io/bwcliversion.txt").Content.Trim()
 
 				if ($localBWCliVersion -ne $remoteBWCliVersion) {
+					Write-Host ""
+					Write-Host ""
 					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
 					Remove-Item -Path $bwCliBinName
 					DownloadBWCli
+				}
+				else {
+					Write-Host " No update found."
+					Write-Host ""
 				}
 			}
 		}
