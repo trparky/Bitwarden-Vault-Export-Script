@@ -32,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.45"
+		$ver = "1.46"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -363,6 +363,9 @@ function Export-Bitwarden { # Don't touch this line!
 			foreach ($item in $itemsWithAttachments) {
 				foreach ($attachment in $item.attachments) {
 					$filePath = Join-Path $saveFolderAttachments $item.name
+
+					if ($IsWindows) { $filePath = $filePath + "\" }
+					else { $filePath = $filePath + "/" }
 
 					& $bwCliBinName get attachment "$($attachment.fileName)" --itemid $item.id --output $filePath
 					if ($IsWindows) { Write-Host "" }
