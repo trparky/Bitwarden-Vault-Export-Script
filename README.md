@@ -3,7 +3,7 @@ As stated in the script file, the script is based upon another (Bash) script cre
 
 Starting with Version 1.17 it's even easier to use this script. The script does everything for you. All you have to do is run it, it will download the Bitwarden CLI program (if it needs to). There's so many new improvements to the code from the original version that makes this script surpass the original script written by David H by leaps and bounds.
 
-# Install from the Powershell Gallery
+# Install from the <a href="https://www.powershellgallery.com/packages/Export-Bitwarden">Powershell Gallery</a>
 Installing this module is now even easier, all you have to do is execute...
 
 Install-Module -Name Export-Bitwarden
