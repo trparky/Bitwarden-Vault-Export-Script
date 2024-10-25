@@ -13,3 +13,7 @@ All active development will now take place in the dev branch.
 
 # Open Source!!!
 Yes, this is open source and licensed under the MIT license. What does this mean? It means that you, the user, can fork this project, make your additions, and create a pull request for me to include your additions and improvements back to the original script. Isn't open source cool? I think so!
+
+## License Change Notice
+As of October 24th, 2024, this project is now licensed under the GPL License. 
+Please refer to the LICENSE file for the updated terms. Previous versions were licensed under the MIT License.
