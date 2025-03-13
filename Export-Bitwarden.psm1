@@ -32,7 +32,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.48"
+		$ver = "1.49"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -171,6 +171,7 @@ function Export-Bitwarden { # Don't touch this line!
 			Write-Host "Bitwarden CLI application not found, downloading... Please Wait." -NoNewLine
 			DownloadBWCli
 			Get-Date | Out-File -FilePath (Join-Path $PSScriptRoot "lastcheckforupdate.txt") -NoNewline
+			Set-Location -Path $currentLocation
 		}
 		else {
 			if (($checkForBWCliUpdate) -and (($forcebwcliupdate) -or (ShouldWeCheckForABWCLIUpdate))) {
@@ -188,6 +189,7 @@ function Export-Bitwarden { # Don't touch this line!
 					Write-Host "Bitwarden CLI application update found, downloading... Please Wait." -NoNewLine
 					Remove-Item -Path $bwCliBinName
 					DownloadBWCli
+					Set-Location -Path $currentLocation
 				}
 				else {
 					Write-Host " No update found."
@@ -231,8 +233,6 @@ function Export-Bitwarden { # Don't touch this line!
 		else { $saveFolder = $saveFolder + "/" }
 
 		$saveFolderAttachments = Join-Path $saveFolder "attachments"
-
-		if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
 		if ((& $bwCliBinName status | ConvertFrom-Json).status -ne "unlocked") {
 			# Prompt user for their Bitwarden password
@@ -320,6 +320,8 @@ function Export-Bitwarden { # Don't touch this line!
 		Write-Host ""
 		Write-Host "Performing vault exports..."
 		Write-Host ""
+
+		if (!(Test-Path -Path $saveFolder)) { New-Item -ItemType Directory -Path $saveFolder | Out-Null }
 
 		if (!$encryptedDataBackup) {
 			Write-Host "Exporting personal vault to an unencrypted file..."
