@@ -299,10 +299,11 @@ function Export-Bitwarden { # Don't touch this line!
 			else {
 				$password1Encrypted = ConvertTo-SecureString $encryptPassword -AsPlainText -Force
 			}
-			Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
-			Write-Host " Your vault contents will be saved to an unencrypted file."
 		}
 		else {
+			Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
+			Write-Host " Your vault contents will be saved to an unencrypted file."
+			
 			if (!$continue) {
 				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
 				Write-Host " Rerun the script with the -continue option."
