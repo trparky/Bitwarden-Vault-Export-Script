@@ -15,7 +15,10 @@
 function Export-Bitwarden { # Don't touch this line!
 	param (
 		[switch]$forcebwcliupdate,
-		[switch]$forcelogout
+		[switch]$forcelogout,
+		[switch]$compress,
+		[switch]$encrypt,
+		[switch]$continue
 	)
 
 	# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
@@ -32,7 +35,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.49"
+		$ver = "1.50"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -143,19 +146,6 @@ function Export-Bitwarden { # Don't touch this line!
 			}
 		}
 
-		function AskYesNoQuestion {
-			param (
-				[String]$prompt
-			)
-
-			$answer = ""
-			do {
-				$answer = (Read-Host $prompt).ToLower().Trim()
-			} while ($answer -ne 'y' -and $answer -ne 'n')
-
-			return $answer
-		}
-
 		function LockAndLogout {
 		      	& $bwCliBinName lock
 		      	Write-Host ""
@@ -219,7 +209,9 @@ function Export-Bitwarden { # Don't touch this line!
 		}
 
 		# Prompt user for their Bitwarden username
-		$userEmail = Read-Host "Enter your Bitwarden Username"
+		if ($userEmail -eq $null) {
+			$userEmail = Read-Host "Enter your Bitwarden Username"
+		}
 
 		if (!(ValidateEmailAddress -email $userEmail)) {
 			Write-Host -ForegroundColor Red "ERROR:" -NoNewline
@@ -234,10 +226,15 @@ function Export-Bitwarden { # Don't touch this line!
 
 		$saveFolderAttachments = Join-Path $saveFolder "attachments"
 
-		if ((& $bwCliBinName status | ConvertFrom-Json).status -ne "unlocked") {
-			# Prompt user for their Bitwarden password
-			$bwPasswordEncrypted = Read-Host "Enter your Bitwarden Password" -AsSecureString
+		if ($userPassword) {
+			$bwPasswordEncrypted = ConvertTo-SecureString $userPassword -AsPlainText -Force
+		}
 
+		if ((& $bwCliBinName status | ConvertFrom-Json).status -ne "unlocked") {
+			if ($bwPasswordEncrypted -eq $null) {
+				# Prompt user for their Bitwarden password
+				$bwPasswordEncrypted = Read-Host "Enter your Bitwarden Password" -AsSecureString
+			}
 			Write-Host ""
 
 			# Login user if not already authenticated
@@ -272,38 +269,43 @@ function Export-Bitwarden { # Don't touch this line!
 		$encryptedDataBackup = $false
 
 		Write-Host ""
-
-		if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
+		if ($encrypt) {
+			if($encryptPassword -eq $null) {
 			# Prompt the user for an encryption password
-			$password1Encrypted = Read-Host "Enter a password to encrypt your vault" -AsSecureString
-			$password1PlainText = ConvertSecureString -String $password1Encrypted
+				$password1Encrypted = Read-Host "Enter a password to encrypt your vault" -AsSecureString
+				$password1PlainText = ConvertSecureString -String $password1Encrypted
 
-			$password2Encrypted = Read-Host "Enter the same password for verification" -AsSecureString
-			$password2PlainText = ConvertSecureString -String $password2Encrypted
+				$password2Encrypted = Read-Host "Enter the same password for verification" -AsSecureString
+				$password2PlainText = ConvertSecureString -String $password2Encrypted
 
-			if ($password1PlainText -ne $password2PlainText) {
-				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
-				Write-Host " The passwords did not match."
-				LockAndLogout
-				$env:BW_SESSION = ""
-				$bwPasswordEncrypted = ""
-				$bwPasswordPlainText = ""
-				$password1Encrypted = ""
-				$password1PlainText = ""
-				$password2Encrypted = ""
-				$password2PlainText = ""
-				return
+				if ($password1PlainText -ne $password2PlainText) {
+					Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
+					Write-Host " The passwords did not match."
+					LockAndLogout
+					$env:BW_SESSION = ""
+					$bwPasswordEncrypted = ""
+					$bwPasswordPlainText = ""
+					$password1Encrypted = ""
+					$password1PlainText = ""
+					$password2Encrypted = ""
+					$password2PlainText = ""
+					return
+				}
+				else {
+					Write-Host "Password verified. Be sure to save your password in a safe place!"
+					$encryptedDataBackup = $true
+				}
 			}
 			else {
-				Write-Host "Password verified. Be sure to save your password in a safe place!"
-				$encryptedDataBackup = $true
+				$password1Encrypted = ConvertTo-SecureString $encryptPassword -AsPlainText -Force
 			}
-		}
-		else {
 			Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
 			Write-Host " Your vault contents will be saved to an unencrypted file."
-
-			if ((AskYesNoQuestion -prompt "Continue? [y/n]") -eq "n") {
+		}
+		else {
+			if (!$continue) {
+				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
+				Write-Host " Rerun the script with the -continue option."
 				LockAndLogout
 				Write-Host "Exiting script."
 				$env:BW_SESSION = ""
@@ -389,7 +391,7 @@ function Export-Bitwarden { # Don't touch this line!
 
 		LockAndLogout
 
-		if ((AskYesNoQuestion -prompt "Compress? [y/n]") -eq "y") {
+		if ($compress) {
 			Write-Host "Compressing backup..." -NoNewLine
 			Set-Location -Path $saveFolder
 
