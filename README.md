@@ -1,3 +1,5 @@
+<img src="https://img.shields.io/badge/license-GPL-green">
+
 # Bitwarden Vault Export Script
 As stated in the script file, the script is based upon another (Bash) script created by "David H". I took his script, added much more functionality, and eventually converted it over to a Powershell script.
 
@@ -19,4 +21,4 @@ As of October 24th, 2024, this project is now licensed under the GPL License.
 Please refer to the LICENSE file for the updated terms. Previous versions were licensed under the MIT License.
 
 ## Contributions
-We welcome contributions to Export-Bitwarden! If you’ve made improvements or fixes, please submit a pull request. All contributions must comply with the GPLv3 license, which means any modifications you make should also be shared with the community.
+We welcome contributions to Export-Bitwarden! If youâ€™ve made improvements or fixes, please submit a pull request. All contributions must comply with the GPLv3 license, which means any modifications you make should also be shared with the community.
