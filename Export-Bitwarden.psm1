@@ -15,7 +15,8 @@
 function Export-Bitwarden { # Don't touch this line!
 	param (
 		[switch]$forcebwcliupdate,
-		[switch]$forcelogout
+		[switch]$forcelogout,
+		[switch]$dontencrypt
 	)
 
 	# This tells the script if it should automatically check for an update of the Bitwarden CLI executable that's actually responsible for backing up your Bitwarden vault.
@@ -32,7 +33,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.49"
+		$ver = "1.50"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -192,7 +193,8 @@ function Export-Bitwarden { # Don't touch this line!
 					Set-Location -Path $currentLocation
 				}
 				else {
-					Write-Host " No update found."
+					if ($forcebwcliupdate) { Write-Host " " -NoNewLine }
+					Write-Host "No Bitwarden CLI update found."
 					Write-Host ""
 				}
 			}
@@ -273,47 +275,57 @@ function Export-Bitwarden { # Don't touch this line!
 
 		Write-Host ""
 
-		if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
-			# Prompt the user for an encryption password
-			$password1Encrypted = Read-Host "Enter a password to encrypt your vault" -AsSecureString
-			$password1PlainText = ConvertSecureString -String $password1Encrypted
-
-			$password2Encrypted = Read-Host "Enter the same password for verification" -AsSecureString
-			$password2PlainText = ConvertSecureString -String $password2Encrypted
-
-			if ($password1PlainText -ne $password2PlainText) {
-				Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
-				Write-Host " The passwords did not match."
-				LockAndLogout
-				$env:BW_SESSION = ""
-				$bwPasswordEncrypted = ""
-				$bwPasswordPlainText = ""
-				$password1Encrypted = ""
-				$password1PlainText = ""
-				$password2Encrypted = ""
-				$password2PlainText = ""
-				return
-			}
-			else {
-				Write-Host "Password verified. Be sure to save your password in a safe place!"
-				$encryptedDataBackup = $true
-			}
+		if ($dontencrypt) {
+			Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
+			Write-Host " Your vault contents will be saved to an " -NoNewLine
+			Write-Host "UNENCRYPTED" -NoNewLine -ForegroundColor Red
+			Write-Host " file."
 		}
 		else {
-			Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
-			Write-Host " Your vault contents will be saved to an unencrypted file."
+			if ((AskYesNoQuestion -prompt "Do you want to encrypt your backup? [y/n]") -eq "y") {
+				# Prompt the user for an encryption password
+				$password1Encrypted = Read-Host "Enter a password to encrypt your vault" -AsSecureString
+				$password1PlainText = ConvertSecureString -String $password1Encrypted
 
-			if ((AskYesNoQuestion -prompt "Continue? [y/n]") -eq "n") {
-				LockAndLogout
-				Write-Host "Exiting script."
-				$env:BW_SESSION = ""
-				$bwPasswordEncrypted = ""
-				$bwPasswordPlainText = ""
-				$password1Encrypted = ""
-				$password1PlainText = ""
-				$password2Encrypted = ""
-				$password2PlainText = ""
-				return
+				$password2Encrypted = Read-Host "Enter the same password for verification" -AsSecureString
+				$password2PlainText = ConvertSecureString -String $password2Encrypted
+
+				if ($password1PlainText -ne $password2PlainText) {
+					Write-Host -ForegroundColor Red "ERROR:" -NoNewLine
+					Write-Host " The passwords did not match."
+					LockAndLogout
+					$env:BW_SESSION = ""
+					$bwPasswordEncrypted = ""
+					$bwPasswordPlainText = ""
+					$password1Encrypted = ""
+					$password1PlainText = ""
+					$password2Encrypted = ""
+					$password2PlainText = ""
+					return
+				}
+				else {
+					Write-Host "Password verified. Be sure to save your password in a safe place!"
+					$encryptedDataBackup = $true
+				}
+			}
+			else {
+				Write-Host -ForegroundColor Yellow "WARNING!" -NoNewLine
+				Write-Host " Your vault contents will be saved to an " -NoNewLine
+				Write-Host "UNENCRYPTED" -NoNewLine -ForegroundColor Red
+				Write-Host " file."
+
+				if ((AskYesNoQuestion -prompt "Continue? [y/n]") -eq "n") {
+					LockAndLogout
+					Write-Host "Exiting script."
+					$env:BW_SESSION = ""
+					$bwPasswordEncrypted = ""
+					$bwPasswordPlainText = ""
+					$password1Encrypted = ""
+					$password1PlainText = ""
+					$password2Encrypted = ""
+					$password2PlainText = ""
+					return
+				}
 			}
 		}
 
