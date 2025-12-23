@@ -33,7 +33,7 @@ function Export-Bitwarden { # Don't touch this line!
 		# == WARNING!!! DO NOT TOUCH ANYTHING BELOW THIS!!! ==
 		# ====================================================
 
-		$ver = "1.50"
+		$ver = "1.51"
 
 		Write-Host -ForegroundColor Green "========================================================================================"
 		Write-Host -ForegroundColor Green "==                        Bitwarden Vault Export Script v$ver                         =="
@@ -64,7 +64,7 @@ function Export-Bitwarden { # Don't touch this line!
 		function DownloadBWCli {
 			$zipFilePath = (Join-Path $PSScriptRoot "bw.zip")
 
-			$baseDownloadURL = "https://vault.bitwarden.com/download/?app=cli&platform="
+			$baseDownloadURL = "https://bitwarden.com/download/?app=cli&platform="
 
 			if ($IsWindows) { Invoke-WebRequest -Uri ($baseDownloadURL + "windows") -OutFile $zipFilePath }
 			elseif ($IsLinux) { Invoke-WebRequest -Uri ($baseDownloadURL + "linux") -OutFile $zipFilePath }
